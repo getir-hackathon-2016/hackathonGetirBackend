@@ -22,10 +22,16 @@ exports.show = function(req, res) {
 
 // Creates a new category in the DB.
 exports.create = function(req, res) {
-  Category.create(req.body, function(err, category) {
-    if(err) { return handleError(res, err); }
-    return res.status(201).json(category);
-  });
+   Category.create(req.body, function(err, category) {
+        if (err) {
+
+            return handleError(res, err);
+        } else {
+          console.log(req.body)
+            return res.status(201).json(category);
+        }
+
+    });
 };
 
 // Updates an existing category in the DB.

@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
 var CategorySchema = new Schema({
   name: {
   	type: String,
-  	i18: true
+  	i18n: true
   },
   info: String,
   active: Boolean

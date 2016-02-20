@@ -48,12 +48,13 @@ function onConnect(socket) {
     // When the client emits 'info', this listens and executes
     socket.on('getAvailableCouriers', function(userData) {
         console.log("registerClient" + userData)
-
+        console.log(userData)
+/*
         // TO FILTER THE ARRAY OF COURIERS DEPENDING ON THEIR CATEGORY TYPES
         availableCouriersUnsortedArray = _.filter(availableCouriersUnsortedArray, function(courier) {
             return courier.category == userData.category;
         });
-
+*/
         //TO GET THE SORT MIN. DISTANCED SORTED ARRAY FROM THE USER'S LOCATION
         var orderedDistancesArray = geolib.orderByDistance({
             latitude: userLocation.latitude,
