@@ -108,7 +108,7 @@ function onConnect(socket) {
 
 
         //SEND THE UNSORTED COURIER ARRAY TO THE CLIENT
-        socket.emit("sortedCouriersList", availableCouriersUnsortedArray);
+       // socket.emit("sortedCouriersList", availableCouriersUnsortedArray);
 
         console.info('[%s] %s', socket.address, JSON.stringify(userData, null, 2));
 
