@@ -11,19 +11,13 @@ var _ = require('lodash');
 var geolib = require('geolib');
 var courierSocket = require('../api/courier/courier.socket');
 var dataModule = require('../api/dataService');
-var redis = require('redis');
-var client = redis.createClient(); //creates a new client
-var bluebird = require('bluebird');
+var redisService = require('../api/redisService');
 var unirest = require('unirest');
 
 
-client.on('connect', function() {
-    console.log('Redis connected');
-});
 
-//promisify REDIS
-bluebird.promisifyAll(redis.RedisClient.prototype);
-bluebird.promisifyAll(redis.Multi.prototype);
+
+
 
 
 
@@ -32,7 +26,7 @@ var availableCouriersUnsortedArray = [{
     name: "courier1",
     phone: 23,
     latitude: 54.406505,
-    longitude: 53,
+    longitude: 53.12345,
     password: 12,
     info: "info",
     category: "56c7cd3562b0ab3310030e84",
@@ -54,10 +48,10 @@ var availableCouriersUnsortedArray = [{
     }
 }];
 
+//REDIS
+//redisService.client.set("availableCouriersUnsortedArray", JSON.stringify(availableCouriersUnsortedArray), redis.print);
 
-
-
-// When the user disconnects.. perform this
+// When the COURIER disconnects.. perform this
 function onDisconnect(socket) {
     console.log("disconect")
     console.log(socket.id);
@@ -88,36 +82,32 @@ console.log(finalLink)
 function onConnect(socket) {
 
 
-
-
     // SENDS THE AVAILABLE COURIERS TO CLIENT DEPENDING ON THEIR LOCATION
     socket.on('getAvailableCouriers', function(userData) {
 
+        /*
+                // TO FILTER THE ARRAY OF COURIERS DEPENDING ON THEIR CATEGORY TYPES
+                availableCouriersUnsortedArray = _.filter(availableCouriersUnsortedArray, function(courier) {
+                    return courier.category == userData.category;
+                });
+        */
 
 
-
-/*
-        // TO FILTER THE ARRAY OF COURIERS DEPENDING ON THEIR CATEGORY TYPES
-        availableCouriersUnsortedArray = _.filter(availableCouriersUnsortedArray, function(courier) {
-            return courier.category == userData.category;
-        });
-*/
+        //GET DISTANCE AND TIMES
         unirest.get('http://maps.googleapis.com/maps/api/distancematrix/json?origins=50.406505,22.67708&destinations=' + finalLink + '&mode=driving&language=en-EN&sensor=false')
 
         .header('Accept', 'application/json')
             .end(function(response) {
                 //console.log(response.raw_body);
                 console.log(JSON.parse(response.raw_body).rows[0].elements.length)
-
                 for (var i = 0; i < JSON.parse(response.raw_body).rows[0].elements.length; i++) {
                     availableCouriersUnsortedArray[i].distance = JSON.parse(response.raw_body).rows[0].elements[i];
                 }
-
                 console.log(availableCouriersUnsortedArray)
                 socket.emit('sortedCouriersList', availableCouriersUnsortedArray);
             });
 
-       
+
         //SEND THE UNSORTED COURIER ARRAY TO THE CLIENT
         socket.emit("sortedCouriersList", availableCouriersUnsortedArray);
 
@@ -128,11 +118,12 @@ function onConnect(socket) {
 
     //A COURIER IS LOGGING IN
     socket.on('courierLogin', function(data) {
-
+        console.log("COURIER LOGGED IN");
         dataModule.getCourier(data.courierId).then(function(courier) {
-            socket.id = data.courierId;
-            //courierin locationini güncelle(alpar yapıcak bunu)
+            socket.id = data.courierId; //give socket the same name with data's courierId
+            
             availableCouriersUnsortedArray.push(courier);
+             console.log("-----AVAILABLE COURIERS-----");
             console.log(availableCouriersUnsortedArray)
 
 

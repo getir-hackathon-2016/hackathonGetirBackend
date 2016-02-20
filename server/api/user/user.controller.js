@@ -6,7 +6,7 @@ var deepExtend = require('deep-extend');
 // Get list of users
 exports.index = function(req, res) {
     User.find()
-        //.populate('contents')
+        .populate('address')
         .exec(function(err, categorys) {
             if (err) {
                 return handleError(res, err);
@@ -18,17 +18,17 @@ exports.index = function(req, res) {
 
 //LOGIN get a single user
 exports.show = function(req, res) {
-console.log(req.params)
     User.findOne({
             "username": req.params.username,
             "password": req.params.userPassword
         })
+        .populate('address')
         .exec(function(err, user) {
             if (err) {
                 console.log("either password or username is wrong");
                 return handleError(res, err);
             }
-            console.log(user)
+           console.log("USER LOGGED IN: "+user.username)
             return res.status(201).json(user);
         })
 };
