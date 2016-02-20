@@ -25,21 +25,18 @@ exports.show = function(req, res) {
     console.log(req.params.id)
     try {
         // the synchronous code that we want to catch thrown errors on
+
+        
+//AIzaSyC99b5mcy21sz--bxYNPcb8aaPmqvmYNXo
         dataModule.getCourier(req.params.id).then(function(courier) {
             console.log(courier)
-            unirest.get('http://geocode-maps.yandex.ru/1.x/?geocode='+courier.longitude+','+courier.longitude+'&lang=tr-TR&format=json')
+            unirest.get('https://maps.googleapis.com/maps/api/distancematrix/json?origins=54.406505,18.67708&destinations=54.446251,18.570993|52.446251,28.570993|54.446251,28.570993&mode=driving&language=en-EN&sensor=false&key=AIzaSyC99b5mcy21sz--bxYNPcb8aaPmqvmYNXo')
                 .header('Accept', 'application/json')
                 .end(function(response) {
                     
-                    console.log(response.body.response.GeoObjectCollection.metaDataProperty.GeocoderResponseMetaData)
+                    console.log(response.raw_body)
                 });
-            /*
-            request('http://geocode-maps.yandex.ru/1.x/?geocode='+courier.longitude+','+courier.longitude+'&lang=en-US', function(error, response, body) {
-                if (!error && response.statusCode == 200) {
-                    console.log(body) 
-                }
-            })
-*/
+
             return res.status(200).json(courier);
         })
     } catch (err) {
@@ -60,6 +57,7 @@ exports.returnCourier = function(req, res) {
                 return handleError(res, err);
             }
             // console.log('The uploader is %s', content.uploader.name);
+            courier.sendNotif("asdasda");
             return res.status(201).json(courier);
 
         })

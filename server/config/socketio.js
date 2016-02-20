@@ -11,25 +11,50 @@ var _ = require('lodash');
 var geolib = require('geolib');
 var courierSocket = require('../api/courier/courier.socket');
 var dataModule = require('../api/dataService');
+var redis = require('redis');
+var client = redis.createClient(); //creates a new client
+var bluebird = require('bluebird');
+var unirest = require('unirest');
+
+
+client.on('connect', function() {
+    console.log('Redis connected');
+});
+
+//promisify REDIS
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
 
 
 
-var userLocation = {
-    "latitude": "37.4224764",
-    "longitude": "-54.0842499"
-};
 
-var testCategory = {
-    name: "testCategory"
-};
+var availableCouriersUnsortedArray = [{
+    name: "courier1",
+    phone: 23,
+    latitude: 54.406505,
+    longitude: 53,
+    password: 12,
+    info: "info",
+    category: "56c7cd3562b0ab3310030e84",
+    price: {
+        tl: 12,
+        usd: 5
+    }
+}, {
+    name: "courier2",
+    phone: 43,
+    password: 2,
+    latitude: 54.406505,
+    longitude: 18.67708,
+    info: "info",
+    category: "56c7cd3562b0ab3310030e84",
+    price: {
+        tl: 12,
+        usd: 5
+    }
+}];
 
 
-var availableCouriersUnsortedArray = [];
-
-
-function courierRegisterToDatabase(socket) {
-    availableCouriersUnsortedArray.push(socket);
-}
 
 
 // When the user disconnects.. perform this
@@ -49,40 +74,53 @@ function onDisconnect(socket) {
 
 }
 
+
+var finalLink = "";
+_.each(availableCouriersUnsortedArray, function(courier) {
+    finalLink += courier.latitude + "," + courier.longitude + "|";
+})
+console.log(finalLink)
+
+//&key=AIzaSyC99b5mcy21sz--bxYNPcb8aaPmqvmYNXo
+
+
 // When the user connects.. perform this
 function onConnect(socket) {
 
-    var availableCouriersSortedArray = [];
 
 
-   
-   // SENDS THE AVAILABLE COURIERS TO CLIENT DEPENDING ON THEIR LOCATION
+
+    // SENDS THE AVAILABLE COURIERS TO CLIENT DEPENDING ON THEIR LOCATION
     socket.on('getAvailableCouriers', function(userData) {
-        //  console.log("registerClient" + userData)
-        // console.log(userData)
 
-        /*
-                // TO FILTER THE ARRAY OF COURIERS DEPENDING ON THEIR CATEGORY TYPES
-                availableCouriersUnsortedArray = _.filter(availableCouriersUnsortedArray, function(courier) {
-                    return courier.category == userData.category;
-                });
-        */
-        
-        //TO GET THE SORT MIN. DISTANCED SORTED ARRAY FROM THE USER'S LOCATION
-        var orderedDistancesArray = geolib.orderByDistance({
-            latitude: userLocation.latitude,
-            longitude: userLocation.longitude
-        }, availableCouriersUnsortedArray);
 
-        //REORDER THE ORIGINAL COURIERS ARRAY AND PUSH IT TO THE NEW ARRAY(COURIERSSORTEDARRAY)
-        _.forEach(orderedDistancesArray, function(value, index) {
-            availableCouriersSortedArray.push(availableCouriersUnsortedArray[orderedDistancesArray[index].key])
 
+
+/*
+        // TO FILTER THE ARRAY OF COURIERS DEPENDING ON THEIR CATEGORY TYPES
+        availableCouriersUnsortedArray = _.filter(availableCouriersUnsortedArray, function(courier) {
+            return courier.category == userData.category;
         });
+*/
+        unirest.get('http://maps.googleapis.com/maps/api/distancematrix/json?origins=50.406505,22.67708&destinations=' + finalLink + '&mode=driving&language=en-EN&sensor=false')
 
-        //SEND THE SORTED COURIER ARRAY TO THE CLIENT
-        socket.emit("sortedCouriersList", availableCouriersSortedArray);
-        //console.log(availableCouriersSortedArray)
+        .header('Accept', 'application/json')
+            .end(function(response) {
+                //console.log(response.raw_body);
+                console.log(JSON.parse(response.raw_body).rows[0].elements.length)
+
+                for (var i = 0; i < JSON.parse(response.raw_body).rows[0].elements.length; i++) {
+                    availableCouriersUnsortedArray[i].distance = JSON.parse(response.raw_body).rows[0].elements[i];
+                }
+
+                console.log(availableCouriersUnsortedArray)
+                socket.emit('sortedCouriersList', availableCouriersUnsortedArray);
+            });
+
+       
+        //SEND THE UNSORTED COURIER ARRAY TO THE CLIENT
+        socket.emit("sortedCouriersList", availableCouriersUnsortedArray);
+
         console.info('[%s] %s', socket.address, JSON.stringify(userData, null, 2));
 
     });
@@ -120,19 +158,19 @@ function onConnect(socket) {
         console.log(availableCouriersUnsortedArray)
 
     });
-/*
-    //A COURIER IS REGISTERING TO THE SYSTEM
-    socket.on('registerCourier', function(data) {
-        console.log(data)
-        availableCouriersUnsortedArray.push(data);
-        socket.broadcast.emit('new courierAvailable', data);
-    });
-    socket.on('UnRegisterCourier', function(data) {
-        console.log(data)
-        socket.broadcast.emit('courierRemoved', data);
-        availableCouriersUnsortedArray.splice(availableCouriersUnsortedArray.indexOf(data), 1);
-    });
-*/
+    /*
+        //A COURIER IS REGISTERING TO THE SYSTEM
+        socket.on('registerCourier', function(data) {
+            console.log(data)
+            availableCouriersUnsortedArray.push(data);
+            socket.broadcast.emit('new courierAvailable', data);
+        });
+        socket.on('UnRegisterCourier', function(data) {
+            console.log(data)
+            socket.broadcast.emit('courierRemoved', data);
+            availableCouriersUnsortedArray.splice(availableCouriersUnsortedArray.indexOf(data), 1);
+        });
+    */
     // Insert sockets below
     require('../api/address/address.socket').register(socket);
     require('../api/category/category.socket').register(socket);

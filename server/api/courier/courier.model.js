@@ -42,6 +42,8 @@ var CourierSchema = new Schema({
     }
 });
 
+
+
 CourierSchema.plugin(i18nPlugin, {
     languages: ['tr', 'en'],
     defaultLanguage: 'en'

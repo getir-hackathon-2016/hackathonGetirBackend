@@ -18,17 +18,18 @@ exports.index = function(req, res) {
 
 //LOGIN get a single user
 exports.show = function(req, res) {
+console.log(req.params)
     User.findOne({
-            username: req.body.username,
-            password: req.body.password
+            "username": req.params.username,
+            "password": req.params.userPassword
         })
-        .populate('address')
-        .exec(function(err, courier) {
+        .exec(function(err, user) {
             if (err) {
                 console.log("either password or username is wrong");
                 return handleError(res, err);
             }
-            return res.status(201).json(courier);
+            console.log(user)
+            return res.status(201).json(user);
         })
 };
 // Creates a new user in the DB.

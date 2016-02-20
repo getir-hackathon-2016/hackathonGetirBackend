@@ -9,7 +9,7 @@ router.get('/', controller.index);
 router.get('/:id', controller.show);
 router.get('/password/:password', controller.returnCourier);
 router.post('/', controller.create);
-router.post('/', controllerSocket.register);
+//router.post('/', controllerSocket.register);
 router.put('/:id', controller.update);
 router.patch('/:id', controller.update);
 router.delete('/:id', controller.destroy);

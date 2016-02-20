@@ -24,3 +24,4 @@ exports.onSave = testFunc;
 function onRemove(socket, doc, cb) {
   socket.emit('courier:remove', doc);
 }
+
