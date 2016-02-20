@@ -11,7 +11,6 @@ var _ = require('lodash');
 var geolib = require('geolib');
 var courierSocket = require('../api/courier/courier.socket');
 var dataModule = require('../api/dataService');
-var redisService = require('../api/redisService');
 var unirest = require('unirest');
 
 
