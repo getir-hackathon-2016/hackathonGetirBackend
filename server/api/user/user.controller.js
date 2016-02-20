@@ -15,6 +15,8 @@ exports.index = function(req, res) {
         })
 };
 
+
+
 //LOGIN get a single user
 exports.show = function(req, res) {
     User.findOne({
