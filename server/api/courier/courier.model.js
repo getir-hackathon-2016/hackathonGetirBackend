@@ -6,12 +6,12 @@ var mongoose = require('mongoose'),
 
 var CourierSchema = new Schema({
     name: String,
-    phone : String,
-    latitude : Number,
-    longitude : Number,
+    phone: String,
+    latitude: Number,
+    longitude: Number,
     info: String,
     active: Boolean,
-    category :  {
+    category: {
         type: Schema.ObjectId,
         ref: 'Category'
     }
