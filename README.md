@@ -1,2 +1,0 @@
-# hackathonGetirBackend
-BackendImplementationBySerhan&amp;Emre
