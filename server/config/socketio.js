@@ -4,12 +4,13 @@
 
 'use strict';
 
+
 var config = require('./environment');
 var Courier = require('../api/courier/courier.model');
 var _ = require('lodash');
 var geolib = require('geolib');
 var courierSocket = require('../api/courier/courier.socket');
-
+var dataModule = require('../api/dataService');
 
 var userLocation = {
     "latitude": "37.4224764",
@@ -28,14 +29,6 @@ var availableCouriersUnsortedArray = [{
     name: "testCourier",
     adress: "adresblabla",
     phone: 13123123,
-    category: testCategory
-}, {
-    id: 2,
-    latitude: 51.518,
-    longitude: 7.45425,
-    name: "serhan",
-    adress: "levazim",
-    phone: 5334722230,
     category: testCategory
 }];
 
@@ -90,12 +83,17 @@ function onConnect(socket) {
 
     });
 
-    socket.on('courierLogin', function(courierid) {
+
+    //A COURIER IS LOGGING IN
+    socket.on('courierLogin', function(data) {
         console.log("courier id")
-        console.log(courierid)
-       Courier.show()
+        console.log(data)
+        dataModule.getCourier(data.courierId).then(function(courier) {
+            console.log(courier)
+        })
     });
 
+    //A COURIER IS REGISTERING TO THE SYSTEM
     socket.on('registerCourier', function(data) {
         console.log(data)
         availableCouriersUnsortedArray.push(data);
