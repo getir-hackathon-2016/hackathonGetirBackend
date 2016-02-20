@@ -9,6 +9,8 @@ var UserSchema = new Schema({
         type: Schema.ObjectId,
         ref: 'Address'
     }],
+    userPassword : String,
+    username : String,
     phone: Number,
     info: String
 });

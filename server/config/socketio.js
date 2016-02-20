@@ -12,6 +12,8 @@ var geolib = require('geolib');
 var courierSocket = require('../api/courier/courier.socket');
 var dataModule = require('../api/dataService');
 
+
+
 var userLocation = {
     "latitude": "37.4224764",
     "longitude": "-54.0842499"
@@ -32,25 +34,29 @@ function courierRegisterToDatabase(socket) {
 
 // When the user disconnects.. perform this
 function onDisconnect(socket) {
-    console.log("disconeccteyiz")
+    console.log("disconect")
     console.log(socket.id);
-    
-    
- availableCouriersUnsortedArray =  _.remove(availableCouriersUnsortedArray, function (courier) {
-  return courier._id != socket.id
-});
+
+
+    availableCouriersUnsortedArray = _.remove(availableCouriersUnsortedArray, function(courier) {
+        if (courier) {
+            return courier._id != socket.id
+        }
+
+    });
 
     console.log(availableCouriersUnsortedArray)
-  
+
 }
 
 // When the user connects.. perform this
 function onConnect(socket) {
- 
+
     var availableCouriersSortedArray = [];
 
 
-    // When the client emits 'getAvailableCouriers', this listens and executes
+   
+   // SENDS THE AVAILABLE COURIERS TO CLIENT DEPENDING ON THEIR LOCATION
     socket.on('getAvailableCouriers', function(userData) {
         //  console.log("registerClient" + userData)
         // console.log(userData)
@@ -61,6 +67,7 @@ function onConnect(socket) {
                     return courier.category == userData.category;
                 });
         */
+        
         //TO GET THE SORT MIN. DISTANCED SORTED ARRAY FROM THE USER'S LOCATION
         var orderedDistancesArray = geolib.orderByDistance({
             latitude: userLocation.latitude,
@@ -83,17 +90,37 @@ function onConnect(socket) {
 
     //A COURIER IS LOGGING IN
     socket.on('courierLogin', function(data) {
-       
+
         dataModule.getCourier(data.courierId).then(function(courier) {
-          
             socket.id = data.courierId;
-            //courierin locationini güncelle
+            //courierin locationini güncelle(alpar yapıcak bunu)
             availableCouriersUnsortedArray.push(courier);
             console.log(availableCouriersUnsortedArray)
+
 
         })
     });
 
+    //REALTIME UPDATE THE CURRENT LOCATION OF COURIER
+    socket.on('courierLocation', function(data) {
+        console.log("courierLocation:::")
+        var idx = -1;
+        _.find(availableCouriersUnsortedArray, function(courier, courierIndex) {
+            if (courier._id == data.courierId) {
+                idx = courierIndex;
+                return true;
+            };
+        });
+        if (idx > -1) {
+            availableCouriersUnsortedArray[idx].latitude = data.latitude
+            availableCouriersUnsortedArray[idx].longitude = data.longitude
+        }
+
+
+        console.log(availableCouriersUnsortedArray)
+
+    });
+/*
     //A COURIER IS REGISTERING TO THE SYSTEM
     socket.on('registerCourier', function(data) {
         console.log(data)
@@ -105,6 +132,7 @@ function onConnect(socket) {
         socket.broadcast.emit('courierRemoved', data);
         availableCouriersUnsortedArray.splice(availableCouriersUnsortedArray.indexOf(data), 1);
     });
+*/
     // Insert sockets below
     require('../api/address/address.socket').register(socket);
     require('../api/category/category.socket').register(socket);

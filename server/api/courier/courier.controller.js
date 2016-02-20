@@ -4,13 +4,14 @@ var _ = require('lodash');
 var Courier = require('./courier.model');
 var deepExtend = require('deep-extend');
 var dataModule = require('../dataService');
-
+var unirest = require('unirest');
 // Get list of couriers
 exports.index = function(req, res) {
     try {
         // the synchronous code that we want to catch thrown errors on
         dataModule.getCouriers().then(function(couriers) {
             console.log(couriers)
+
             return res.status(200).json(couriers);
         })
     } catch (err) {
@@ -26,6 +27,19 @@ exports.show = function(req, res) {
         // the synchronous code that we want to catch thrown errors on
         dataModule.getCourier(req.params.id).then(function(courier) {
             console.log(courier)
+            unirest.get('http://geocode-maps.yandex.ru/1.x/?geocode='+courier.longitude+','+courier.longitude+'&lang=tr-TR&format=json')
+                .header('Accept', 'application/json')
+                .end(function(response) {
+                    
+                    console.log(response.body.response.GeoObjectCollection.metaDataProperty.GeocoderResponseMetaData)
+                });
+            /*
+            request('http://geocode-maps.yandex.ru/1.x/?geocode='+courier.longitude+','+courier.longitude+'&lang=en-US', function(error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    console.log(body) 
+                }
+            })
+*/
             return res.status(200).json(courier);
         })
     } catch (err) {

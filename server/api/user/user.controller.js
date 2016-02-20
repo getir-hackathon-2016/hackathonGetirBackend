@@ -5,37 +5,35 @@ var User = require('./user.model');
 var deepExtend = require('deep-extend');
 // Get list of users
 exports.index = function(req, res) {
- User.find()
+    User.find()
         //.populate('contents')
         .exec(function(err, categorys) {
             if (err) {
                 return handleError(res, err);
             }
             return res.status(201).json(categorys);
-
         })
 };
 
-// Get a single user
+
+//LOGIN get a single user
 exports.show = function(req, res) {
- 
     User.findOne({
-            _id: req.params.id
+            username: req.body.username,
+            password: req.body.password
         })
         .populate('address')
-        .exec(function(err, content) {
+        .exec(function(err, courier) {
             if (err) {
+                console.log("either password or username is wrong");
                 return handleError(res, err);
             }
-            // console.log('The uploader is %s', content.uploader.name);
-            return res.status(201).json(content);
-
+            return res.status(201).json(courier);
         })
 };
-
 // Creates a new user in the DB.
 exports.create = function(req, res) {
-  User.create(req.body, function(err, category) {
+    User.create(req.body, function(err, category) {
         if (err) {
 
             return handleError(res, err);
@@ -49,7 +47,7 @@ exports.create = function(req, res) {
 
 // Updates an existing user in the DB.
 exports.update = function(req, res) {
- User.findById(req.params.id, function(err, category) {
+    User.findById(req.params.id, function(err, category) {
         if (err) return res.json(err);
         deepExtend(category, req.body);
         category.save(function(err, pl2) {
@@ -61,16 +59,17 @@ exports.update = function(req, res) {
 
 // Deletes a user from the DB.
 exports.destroy = function(req, res) {
- User.remove({ _id: req.body.id }, function(err) {
-    if (!err) {
+    User.remove({
+        _id: req.body.id
+    }, function(err) {
+        if (!err) {
             console.log("User deleted");
-    }
-    else {
-        console.log("error deleting User");
-    }
-});
+        } else {
+            console.log("error deleting User");
+        }
+    });
 };
 
 function handleError(res, err) {
-  return res.status(500).send(err);
+    return res.status(500).send(err);
 }
