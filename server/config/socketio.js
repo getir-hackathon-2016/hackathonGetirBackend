@@ -22,15 +22,7 @@ var testCategory = {
 };
 
 
-var availableCouriersUnsortedArray = [{
-    id: 1,
-    latitude: 52.516272,
-    longitude: 13.377722,
-    name: "testCourier",
-    adress: "adresblabla",
-    phone: 13123123,
-    category: testCategory
-}];
+var availableCouriersUnsortedArray = [];
 
 
 function courierRegisterToDatabase(socket) {
@@ -40,16 +32,21 @@ function courierRegisterToDatabase(socket) {
 
 // When the user disconnects.. perform this
 function onDisconnect(socket) {
-    availableCouriersUnsortedArray.splice(availableCouriersUnsortedArray.indexOf(socket), 1);
+    console.log("disconeccteyiz")
+    console.log(socket.id);
+    
+    
+ availableCouriersUnsortedArray =  _.remove(availableCouriersUnsortedArray, function (courier) {
+  return courier._id != socket.id
+});
+
+    console.log(availableCouriersUnsortedArray)
+  
 }
 
 // When the user connects.. perform this
 function onConnect(socket) {
-    // socket.id = "lol"
-    // console.log(socket.id)
-
-
-
+ 
     var availableCouriersSortedArray = [];
 
 
@@ -86,10 +83,14 @@ function onConnect(socket) {
 
     //A COURIER IS LOGGING IN
     socket.on('courierLogin', function(data) {
-        console.log("courier id")
-        console.log(data)
+       
         dataModule.getCourier(data.courierId).then(function(courier) {
-            console.log(courier)
+          
+            socket.id = data.courierId;
+            //courierin locationini güncelle
+            availableCouriersUnsortedArray.push(courier);
+            console.log(availableCouriersUnsortedArray)
+
         })
     });
 
@@ -140,6 +141,7 @@ module.exports = function(socketio) {
         socket.on('disconnect', function() {
             onDisconnect(socket);
             console.info('[%s] DISCONNECTED', socket.address);
+
         });
         //console.log("sockets connected");
         //console.log(socketio.sockets.clients())
