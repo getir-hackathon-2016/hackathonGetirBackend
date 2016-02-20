@@ -13,6 +13,7 @@ var config = require('./config/environment');
 /*
 var redis = require('redis');
 var client = redis.createClient(); //creates a new client
+
 */
 
 // Connect to database
