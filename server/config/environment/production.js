@@ -18,6 +18,6 @@ module.exports = {
     uri:    process.env.MONGOLAB_URI ||
             process.env.MONGOHQ_URL ||
             process.env.OPENSHIFT_MONGODB_DB_URL+process.env.OPENSHIFT_APP_NAME ||
-            'mongodb://localhost/getir'
+            'mongodb://heroku_730lj3nr:301993@ds055895.mongolab.com:55895/heroku_730lj3nr'
   }
 };

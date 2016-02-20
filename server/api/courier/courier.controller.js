@@ -28,8 +28,9 @@ exports.show = function(req, res) {
 };
 
 exports.returnCourier = function(req, res) {
+  
   console.log(req.params)
-    Courier.find({
+    Courier.findOne({
         password: req.params.password
     }, function(err, courier) {
         if (err) {
@@ -39,6 +40,8 @@ exports.returnCourier = function(req, res) {
         }
 
     });
+
+
 };
 
 // Creates a new courier in the DB.
