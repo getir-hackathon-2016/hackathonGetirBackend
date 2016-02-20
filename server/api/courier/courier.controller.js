@@ -16,31 +16,33 @@ exports.index = function(req, res) {
 
 // Get a single courier
 exports.show = function(req, res) {
-    Courier.findById(req.params.id, function(err, courier) {
-        if (err) {
-            return handleError(res, err);
-        }
-        if (!courier) {
-            return res.status(404).send('Not Found');
-        }
-        return res.json(courier);
-    });
+     Courier.findOne({
+            _id: req.params.id
+        })
+        .populate('category')
+        .exec(function(err, courier) {
+            if (err) {
+                return handleError(res, err);
+            }
+            // console.log('The uploader is %s', content.uploader.name);
+            return res.status(201).json(courier);
+
+        })
 };
 
 exports.returnCourier = function(req, res) {
-  
-  console.log(req.params)
-    Courier.findOne({
-        password: req.params.password
-    }, function(err, courier) {
-        if (err) {
-            return handleError(res, err);
-        } else {
-            return res.status(201).json(courier)
-        }
+  Courier.findOne({
+            password: req.params.password
+        })
+        .populate('category')
+        .exec(function(err, courier) {
+            if (err) {
+                return handleError(res, err);
+            }
+            // console.log('The uploader is %s', content.uploader.name);
+            return res.status(201).json(courier);
 
-    });
-
+        })
 
 };
 

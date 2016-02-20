@@ -19,7 +19,7 @@
     "mongoose": "^4.0.8",
     "mongoose-i18n": "^0.2.1",
     "morgan": "~1.0.0",
-    "serve-favicon": "~2.0.1",
+    "serve-favicon": "^2.0.1",
     "socket.io": "^1.0.6",
     "socket.io-client": "^1.0.6",
     "socketio-jwt": "^3.0.0"

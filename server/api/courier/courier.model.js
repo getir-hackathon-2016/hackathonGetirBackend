@@ -6,19 +6,39 @@ var mongoose = require('mongoose'),
 
 var CourierSchema = new Schema({
     name: String,
-    phone: Number,
-    latitude: Number,
-    password : Number,
-    longitude: Number,
-    info: String,
-    active: Boolean,
+    phone: {
+        type : Number,
+        default : 33
+    },
+    latitude: {
+        type : Number,
+        default : 33
+    },
+    password : {
+        type : Number,
+        required : true
+    },
+    longitude: {
+        type : Number,
+        default : 33
+    },
+    info: {
+        type : String,
+        default : ""
+    },
     category: {
         type: Schema.ObjectId,
         ref: 'Category'
     },
     price : {
-        tl : Number,
-        usd : Number
+        tl : {
+        type : Number,
+        default : 0
+        },
+        usd : {
+        type : Number,
+        default : 0
+        }
     }
 });
 

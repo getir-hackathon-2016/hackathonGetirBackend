@@ -4,7 +4,7 @@ angular.module('getirApp')
   .controller('MainCtrl', function ($scope, $http, socket) {
     $scope.awesomeThings = [];
 
-socket.emit('registerCourier', { name: 'courier1' ,latitude: 34234,longitue: 2323});
+socket.emit('courierLogin', { name: 'courier1' ,latitude: 34234,longitue: 2323});
 
     $http.get('/api/things').success(function(awesomeThings) {
       $scope.awesomeThings = awesomeThings;
