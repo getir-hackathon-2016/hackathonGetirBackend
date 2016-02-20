@@ -8,16 +8,18 @@ var Courier = require('./courier.model');
 
 exports.register = function(socket) {
   Courier.schema.post('save', function (doc) {
-    onSave(socket, doc);
+    testFunc(socket, doc);
   });
   Courier.schema.post('remove', function (doc) {
     onRemove(socket, doc);
   });
 }
+var testFunc = function(socket,doc) {
+	return doc;
+};
+exports.onSave = testFunc;
 
-function onSave(socket, doc, cb) {
-  socket.emit('courier:save', doc);
-}
+
 
 function onRemove(socket, doc, cb) {
   socket.emit('courier:remove', doc);

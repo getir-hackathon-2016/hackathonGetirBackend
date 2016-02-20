@@ -8,7 +8,7 @@ var config = require('./environment');
 var Courier = require('../api/courier/courier.model');
 var _ = require('lodash');
 var geolib = require('geolib');
-
+var courierSocket = require('../api/courier/courier.socket');
 
 
 var userLocation = {
@@ -20,13 +20,15 @@ var testCategory = {
     name: "testCategory"
 };
 
+
 var availableCouriersUnsortedArray = [{
     id: 1,
     latitude: 52.516272,
     longitude: 13.377722,
     name: "testCourier",
     adress: "adresblabla",
-    phone: 13123123
+    phone: 13123123,
+    category: testCategory
 }, {
     id: 2,
     latitude: 51.518,
@@ -38,17 +40,33 @@ var availableCouriersUnsortedArray = [{
 }];
 
 
+function courierRegisterToDatabase(socket){
+  availableCouriersUnsortedArray.push(socket); 
+  }
+
+
 // When the user disconnects.. perform this
-function onDisconnect(socket) {}
+function onDisconnect(socket) {
+  availableCouriersUnsortedArray.splice(availableCouriersUnsortedArray.indexOf(socket), 1);
+}
 
 // When the user connects.. perform this
 function onConnect(socket) {
+  // socket.id = "lol"
+  // console.log(socket.id)
+  
+
     var availableCouriersSortedArray = [];
 
-    // When the client emits 'info', this listens and executes
+    socket.on('identifySocket', function(socket){
+        console.log(socket)
+    })
+
+    // When the client emits 'getAvailableCouriers', this listens and executes
     socket.on('getAvailableCouriers', function(userData) {
         console.log("registerClient" + userData)
         console.log(userData)
+
 /*
         // TO FILTER THE ARRAY OF COURIERS DEPENDING ON THEIR CATEGORY TYPES
         availableCouriersUnsortedArray = _.filter(availableCouriersUnsortedArray, function(courier) {
@@ -73,10 +91,17 @@ function onConnect(socket) {
         console.info('[%s] %s', socket.address, JSON.stringify(userData, null, 2));
 
     });
-    socket.on('selectCourier', function(userData) {
 
+    socket.on('registerCourier', function(data) {
+         console.log(data)
+          availableCouriersUnsortedArray.push(data); 
+           socket.broadcast.emit('new courierAvailable', data);
     });
-
+    socket.on('UnRegisterCourier', function(data) {
+         console.log(data)
+          socket.broadcast.emit('courierRemoved', data);
+        availableCouriersUnsortedArray.splice(availableCouriersUnsortedArray.indexOf(data), 1);
+    });
     // Insert sockets below
     require('../api/address/address.socket').register(socket);
     require('../api/category/category.socket').register(socket);
@@ -114,9 +139,11 @@ module.exports = function(socketio) {
             onDisconnect(socket);
             console.info('[%s] DISCONNECTED', socket.address);
         });
-
+//console.log("sockets connected");
+//console.log(socketio.sockets.clients())
         // Call onConnect.
         onConnect(socket);
-        console.info('[%s] CONNECTED', socket.address);
+        
+        console.info('[%s] CONNECTED', socket.id);
     });
 };
