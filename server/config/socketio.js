@@ -24,17 +24,59 @@ var unirest = require('unirest');
 var availableCouriersUnsortedArray = [
     {
         _id: "56c819f72a75e63b1a44228e",
-        name: "testCourier",
+        name: "John",
         password: 1,
         category: "56c7cd3562b0ab3310030e84",
         price: {
             usd: 23,
             tl: 50
         },
-        info: "adawd",
-        longitude: 33.2342,
-        latitude: 45.23423,
-        phone: 33
+        info: "Pro Plumber !",
+        longitude: 41.073839,
+        latitude: 28.974577,
+        phone: 534
+    },
+    {
+        _id: "56c819f71a75e63c1a44228e",
+        name: "Mert",
+        password: 12,
+        category: "56c7cd3562b0ab3310030e84",
+        price: {
+            usd: 10,
+            tl: 20
+        },
+        info: "This is Your Gardener!",
+        longitude: 41.067766,
+        latitude: 29.015857,
+        phone: 1234
+    },
+    {
+        _id: "56c394f71a75e63c1a44228e",
+        name: "Emre",
+        password: 12,
+        category: "56c7cd3562b0ab3310030e84",
+        price: {
+            usd: 10,
+            tl: 20
+        },
+        info: "House Cleaning Service",
+        longitude: 41.052016,
+        latitude: 29.022801,
+        phone: 888
+    },
+    {
+        _id: "54c297f71a75e63c1a44228e",
+        name: "Serhan",
+        password: 12,
+        category: "56c7cd3562b0ab3310030e84",
+        price: {
+            usd: 10,
+            tl: 20
+        },
+        info: "Furniture Repairing",
+        longitude: 41.091243,
+        latitude: 28.927027,
+        phone: 2352
     }
 ];
 
