@@ -8,11 +8,11 @@ Getir Hackathon Backend Application Development- NodeJS
 * Emre Alparslan (Frontend - Android)
 
 # What is Fixitt?
-Fixitt is a backend system project, providing a real time software service for the ones who are in need of help in these Areas :
+Fixitt is a backend system project, providing a real time software service for the ones in need of help in these Areas :
 
-*Garden Care
-*Furniture Repairing
-*House Cleaning 
+* Garden Care
+* Furniture Repairing
+* House Cleaning 
 and so on..
 
 Consists of two main models (Users, Couriers).
