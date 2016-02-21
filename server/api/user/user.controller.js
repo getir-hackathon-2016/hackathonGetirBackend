@@ -21,7 +21,7 @@ exports.index = function(req, res) {
 exports.show = function(req, res) {
     User.findOne({
             "username": req.params.username,
-            "password": req.params.userPassword
+            "userPassword": req.params.password
         })
         .populate('address')
         .exec(function(err, user) {
@@ -29,7 +29,6 @@ exports.show = function(req, res) {
                 console.log("either password or username is wrong");
                 return handleError(res, err);
             }
-           console.log("USER LOGGED IN: "+user.username)
             return res.status(201).json(user);
         })
 };

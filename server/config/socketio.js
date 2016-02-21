@@ -32,8 +32,8 @@ var availableCouriersUnsortedArray = [
             tl: 50
         },
         info: "Pro Plumber !",
-        longitude: 41.073839,
-        latitude: 28.974577,
+        longitude: 23.073839,
+        latitude: 43.974577,
         phone: 534
     },
     {
@@ -46,8 +46,8 @@ var availableCouriersUnsortedArray = [
             tl: 20
         },
         info: "This is Your Gardener!",
-        longitude: 41.067766,
-        latitude: 29.015857,
+        longitude: 23.067766,
+        latitude: 44.015857,
         phone: 1234
     },
     {
@@ -60,8 +60,8 @@ var availableCouriersUnsortedArray = [
             tl: 20
         },
         info: "House Cleaning Service",
-        longitude: 41.052016,
-        latitude: 29.022801,
+        longitude: 39.052016,
+        latitude: 53.022801,
         phone: 888
     },
     {
@@ -119,7 +119,7 @@ function onConnect(socket, socketio) {
 
 
         //GET DISTANCE AND TIMES
-        unirest.get('http://maps.googleapis.com/maps/api/distancematrix/json?origins=50.406505,22.67708&destinations=' + finalLink + '&mode=driving&language=en-EN&sensor=false')
+        unirest.get('http://maps.googleapis.com/maps/api/distancematrix/json?origins='+userData.latitude+','+userData.longitude+'&destinations=' + finalLink + '&mode=driving&language=tr-TR&sensor=false')
 
         .header('Accept', 'application/json')
             .end(function(response) {
