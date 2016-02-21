@@ -57,7 +57,6 @@ exports.returnCourier = function(req, res) {
                 return handleError(res, err);
             }
             // console.log('The uploader is %s', content.uploader.name);
-            courier.sendNotif("asdasda");
             return res.status(201).json(courier);
 
         })

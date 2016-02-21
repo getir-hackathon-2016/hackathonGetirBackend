@@ -1,6 +1,7 @@
-/*
+
 var redis = require('redis');
 var client = redis.createClient(); //creates a new client
+
 
 var courierUnSortedArray = [];
 client.on('connect', function() {
@@ -16,4 +17,3 @@ module.exports = {
     }
 }
 
-*/

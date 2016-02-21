@@ -19,21 +19,21 @@ var unirest = require('unirest');
 
 
 
-
+//MOCK DATA
 
 var availableCouriersUnsortedArray = [{
-    "_id": "56c819f72a75e63b1a44228e",
-    "name": "testCourier",
-    "password": 1,
-    "category": "56c7cd3562b0ab3310030e84",
-    "price": {
-        "usd": 23,
-        "tl": 50
+    _id: "56c819f72a75e63b1a44228e",
+    name: "testCourier",
+    password: 1,
+    category: "56c7cd3562b0ab3310030e84",
+    price: {
+        usd: 23,
+        tl: 50
     },
-    "info": "adawd",
-    "longitude": 33.2342,
-    "latitude": 45.23423,
-    "phone": 33
+    info: "adawd",
+    longitude: 33.2342,
+    latitude: 45.23423,
+    phone: 33
 }, {
     _id: "56c7cd3562b0ab1210030e84",
     name: "courier2",
@@ -56,7 +56,7 @@ var availableCouriersUnsortedArray = [{
 // When the COURIER disconnects.. perform this
 function onDisconnect(socket) {
     console.log("disconect")
-    console.log(socket.id);
+    console.log(socket.id  + " Disconnected From Server");
 
 
     availableCouriersUnsortedArray = _.remove(availableCouriersUnsortedArray, function(courier) {
@@ -70,7 +70,7 @@ function onDisconnect(socket) {
 
 }
 
-
+// MAKING THE INPUT PARAMETERS(LOCATIONS) READY TO USE BY MAPS API
 var finalLink = "";
 _.each(availableCouriersUnsortedArray, function(courier) {
     finalLink += courier.latitude + "," + courier.longitude + "|";
@@ -87,13 +87,6 @@ function onConnect(socket) {
     // SENDS THE AVAILABLE COURIERS TO CLIENT DEPENDING ON THEIR LOCATION
     socket.on('getAvailableCouriers', function(userData) {
 
-        /*
-                // TO FILTER THE ARRAY OF COURIERS DEPENDING ON THEIR CATEGORY TYPES
-                availableCouriersUnsortedArray = _.filter(availableCouriersUnsortedArray, function(courier) {
-                    return courier.category == userData.category;
-                });
-        */
-
 
         //GET DISTANCE AND TIMES
         unirest.get('http://maps.googleapis.com/maps/api/distancematrix/json?origins=50.406505,22.67708&destinations=' + finalLink + '&mode=driving&language=en-EN&sensor=false')
@@ -103,6 +96,8 @@ function onConnect(socket) {
                 //console.log(response.raw_body);
                 console.log(JSON.parse(response.raw_body).rows[0].elements.length)
                 for (var i = 0; i < JSON.parse(response.raw_body).rows[0].elements.length; i++) {
+
+                    // ASSIGN EACH DISTANCE VALUE TO ITS CORRESPONDING OBJECT
                     availableCouriersUnsortedArray[i].distance = JSON.parse(response.raw_body).rows[0].elements[i];
                 }
                 console.log(availableCouriersUnsortedArray)
@@ -121,31 +116,34 @@ function onConnect(socket) {
     //HANDLE ORDERS AND BROADCASTS TO ALL THE COURIERS, TO DETECT FOR WHICH ONE IS IT MEANT TO
     socket.on('newOrder', function(order) {
 
-        console.log("new order")
+        console.log("New Order Received, Waiting For Courier To Respond")
 
         socket.broadcast.emit("offerFromUser", order);
 
     });
 
 
-    //COURIER ACCEPTED THE JOB
-    socket.on('OrderacceptedByCourier', function(data) {
-
+    //COURIER ACCEPTED THE JOB, HE IS NO MORE AVAILABLE
+    socket.on('acceptedByCourier', function(data) {
+        console.log("ORDER ACCEPTED BY COURIER")
         dataModule.postOrder(order) // Write it into Database in ORDER Model
 
         //REMOVE THAT COURIER TEMPORARILY WHO HAS JUST GOT THE JOB
         _.remove(availableCouriersUnsortedArray, function(courier) {
             return courier._id != order.courierId
         });
+         console.log(availableCouriersUnsortedArray)
 
     })
 
     //THIS MESSAGE COMES FROM USER TO RELEASE THE COURIER, TO MAKE HIM AVAILABLE
     socket.on('JobAccomplished', function(courierid) {
         //GERI AL REMOVELADIGIN KURYEYI
+        console.log("JOB ACCOMPLISHED")
         dataModule.getCourier(courierid).then(function(courier) {
             availableCouriersUnsortedArray.push(courier)
         })
+        console.log(availableCouriersUnsortedArray)
     })
 
 
@@ -183,10 +181,11 @@ function onConnect(socket) {
         console.log(availableCouriersUnsortedArray)
 
     });
-    /*
+    
+
         //A COURIER IS REGISTERING TO THE SYSTEM
         socket.on('registerCourier', function(data) {
-            console.log(data)
+           
             availableCouriersUnsortedArray.push(data);
             socket.broadcast.emit('new courierAvailable', data);
         });
@@ -195,7 +194,8 @@ function onConnect(socket) {
             socket.broadcast.emit('courierRemoved', data);
             availableCouriersUnsortedArray.splice(availableCouriersUnsortedArray.indexOf(data), 1);
         });
-    */
+    
+
     // Insert sockets below
     require('../api/address/address.socket').register(socket);
     require('../api/category/category.socket').register(socket);

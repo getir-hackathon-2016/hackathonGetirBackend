@@ -25,9 +25,8 @@ module.exports = {
 
     },
     postOrder: function postOrder(order) {
-    console.log(order)
+     
     	Order.create(order, function(err, order2) {
-    			
         return order2;
 
     });
