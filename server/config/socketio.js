@@ -28,7 +28,14 @@ var availableCouriersUnsortedArray = [{
     longitude: 53.12345,
     password: 12,
     info: "info",
-    category: "56c7cd3562b0ab3310030e84",
+    category: {
+        _id: "56c7cd3562b0ab3310030e84",
+        info: "this is a test category",
+        name: {
+            "en": "categoryNameEN",
+            "tr": "categoryNameTR"
+        }
+    },
     price: {
         tl: 12,
         usd: 5
@@ -103,12 +110,11 @@ function onConnect(socket) {
                     availableCouriersUnsortedArray[i].distance = JSON.parse(response.raw_body).rows[0].elements[i];
                 }
                 console.log(availableCouriersUnsortedArray)
+                    //SEND THE UNSORTED COURIER ARRAY TO THE CLIENT
                 socket.emit('sortedCouriersList', availableCouriersUnsortedArray);
             });
 
 
-        //SEND THE UNSORTED COURIER ARRAY TO THE CLIENT
-       // socket.emit("sortedCouriersList", availableCouriersUnsortedArray);
 
         console.info('[%s] %s', socket.address, JSON.stringify(userData, null, 2));
 
@@ -120,9 +126,9 @@ function onConnect(socket) {
         console.log("COURIER LOGGED IN");
         dataModule.getCourier(data.courierId).then(function(courier) {
             socket.id = data.courierId; //give socket the same name with data's courierId
-            
+
             availableCouriersUnsortedArray.push(courier);
-             console.log("-----AVAILABLE COURIERS-----");
+            console.log("-----AVAILABLE COURIERS-----");
             console.log(availableCouriersUnsortedArray)
 
 
@@ -204,6 +210,6 @@ module.exports = function(socketio) {
         // Call onConnect.
         onConnect(socket);
 
-        console.info('[%s] CONNECTED', socket.id);
+        console.info("Socket Connected");
     });
 };

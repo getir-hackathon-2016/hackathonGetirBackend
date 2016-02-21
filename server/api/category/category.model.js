@@ -9,8 +9,7 @@ var CategorySchema = new Schema({
   	type: String,
   	i18n: true
   },
-  info: String,
-  active: Boolean
+  info: String
 });
 
 CategorySchema.plugin(i18nPlugin, {

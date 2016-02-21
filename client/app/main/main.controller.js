@@ -1,14 +1,14 @@
 'use strict';
 
 angular.module('getirApp')
-  .controller('MainCtrl', function ($scope, $http, socket) {
+  .controller('MainCtrl', function ($scope, $http) {
     $scope.awesomeThings = [];
 
-socket.emit('courierLogin', { name: 'courier1' ,latitude: 34234,longitue: 2323});
+//socket.emit('courierLogin', { name: 'courier1' ,latitude: 34234,longitue: 2323});
 
     $http.get('/api/things').success(function(awesomeThings) {
       $scope.awesomeThings = awesomeThings;
-      socket.syncUpdates('thing', $scope.awesomeThings);
+      //socket.syncUpdates('thing', $scope.awesomeThings);
     });
 
     $scope.addThing = function() {
@@ -26,6 +26,6 @@ socket.emit('courierLogin', { name: 'courier1' ,latitude: 34234,longitue: 2323})
     };
 
     $scope.$on('$destroy', function () {
-      socket.unsyncUpdates('thing');
+      //socket.unsyncUpdates('thing');
     });
   });
