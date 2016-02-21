@@ -3,6 +3,7 @@ var courierSocket = require('../api/courier/courier.socket');
 var _ = require('lodash');
 var deepExtend = require('deep-extend');
 var Category = require('../api/category/category.model');
+var Order = require('../api/order/order.model');
 var deepExtend = require('deep-extend');
 
 
@@ -22,5 +23,15 @@ module.exports = {
 
         }).populate('category').exec();
 
+    },
+    postOrder: function postOrder(order) {
+    console.log(order)
+    	Order.create(order, function(err, order2) {
+    			console.log(order2)
+        return order2;
+
+    });
+
     }
+
 }

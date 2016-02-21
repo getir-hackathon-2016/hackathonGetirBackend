@@ -5,10 +5,6 @@ var mongoose = require('mongoose'),
     i18nPlugin = require('mongoose-i18n');
 
 var OrderSchema = new Schema({
-    name: {
-        type: String,
-        i18: true
-    },
     user: {
         type: Schema.ObjectId,
         ref: 'User'
@@ -19,8 +15,7 @@ var OrderSchema = new Schema({
     },
     startTime :{ type : Date, default: Date.now },
     endTime : Date,
-    info: String,
-    active: Boolean
+    info: String
 });
 
 

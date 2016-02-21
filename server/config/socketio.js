@@ -23,6 +23,7 @@ var unirest = require('unirest');
 
 var availableCouriersUnsortedArray = [{
     name: "courier1",
+    _id: "56c819f72a75e63b1a44228e",
     phone: 23,
     latitude: 54.406505,
     longitude: 53.12345,
@@ -41,6 +42,7 @@ var availableCouriersUnsortedArray = [{
         usd: 5
     }
 }, {
+    _id: "56c7cd3562b0ab1210030e84",
     name: "courier2",
     phone: 43,
     password: 2,
@@ -121,13 +123,24 @@ function onConnect(socket) {
     });
 
 
-    
+
     //HANDLE ORDERS
-    socket.on('newOrder', function(order){
-        console.log(order)
+    socket.on('newOrder', function(order) {
+
+        console.log("new order")
+        dataModule.postOrder(order).then(function(data) {
+            console.log(data)
+            socket.on('orderAccepted', function() {
+                
+            })
+
+        })
+
+      
+
     });
 
-    
+
 
     //A COURIER IS LOGGING IN
     socket.on('courierLogin', function(data) {
