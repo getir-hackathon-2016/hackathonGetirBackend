@@ -4,8 +4,8 @@ Getir Hackathon Backend Application Development- NodeJS
 
 
 # Group
-Markup : * Serhan Öztekin (Backend)
-         * Emre Alparslan (Frontend - Android)
+* Serhan Öztekin (Backend)
+* Emre Alparslan (Frontend - Android)
 
 # What is Fixitt?
 Fixitt is a backend system project, providing a real time software service for the ones who are in need of help in these Areas :
@@ -24,9 +24,9 @@ The algorithm behind uses geolocation to chooses the most nearest Couriers to Us
 Google Maps Distance Matrix API is used to detect distances and timings.
 
 # Backend Technologies Used In Development
-Markup : * [NodeJS](https://nodejs.org/en/)
-         * [MongoDB](https://www.mongodb.org/)
-         *[Express](http://expressjs.com/)
+* [NodeJS](https://nodejs.org/en/)
+* [MongoDB](https://www.mongodb.org/)
+* [Express](http://expressjs.com/)
 
 
 
