@@ -21,34 +21,22 @@ var unirest = require('unirest');
 
 //MOCK DATA
 
-var availableCouriersUnsortedArray = [{
-    _id: "56c819f72a75e63b1a44228e",
-    name: "testCourier",
-    password: 1,
-    category: "56c7cd3562b0ab3310030e84",
-    price: {
-        usd: 23,
-        tl: 50
-    },
-    info: "adawd",
-    longitude: 33.2342,
-    latitude: 45.23423,
-    phone: 33
-}, {
-    _id: "56c7cd3562b0ab1210030e84",
-    name: "courier2",
-    phone: 43,
-    password: 2,
-    username: "ee",
-    latitude: 54.406505,
-    longitude: 18.67708,
-    info: "info",
-    category: "56c7cd3562b0ab3310030e84",
-    price: {
-        tl: 12,
-        usd: 5
+var availableCouriersUnsortedArray = [
+    {
+        _id: "56c819f72a75e63b1a44228e",
+        name: "testCourier",
+        password: 1,
+        category: "56c7cd3562b0ab3310030e84",
+        price: {
+            usd: 23,
+            tl: 50
+        },
+        info: "adawd",
+        longitude: 33.2342,
+        latitude: 45.23423,
+        phone: 33
     }
-}];
+];
 
 //REDIS
 //redisService.client.set("availableCouriersUnsortedArray", JSON.stringify(availableCouriersUnsortedArray), redis.print);
@@ -56,7 +44,7 @@ var availableCouriersUnsortedArray = [{
 // When the COURIER disconnects.. perform this
 function onDisconnect(socket) {
     console.log("disconect")
-    console.log(socket.id  + " Disconnected From Server");
+    console.log(socket.id + " Disconnected From Server");
 
 
     availableCouriersUnsortedArray = _.remove(availableCouriersUnsortedArray, function(courier) {
@@ -81,7 +69,7 @@ console.log(finalLink)
 
 
 // When the user connects.. perform this
-function onConnect(socket) {
+function onConnect(socket, socketio) {
 
 
     // SENDS THE AVAILABLE COURIERS TO CLIENT DEPENDING ON THEIR LOCATION
@@ -94,15 +82,17 @@ function onConnect(socket) {
         .header('Accept', 'application/json')
             .end(function(response) {
                 //console.log(response.raw_body);
-                console.log(JSON.parse(response.raw_body).rows[0].elements.length)
-                for (var i = 0; i < JSON.parse(response.raw_body).rows[0].elements.length; i++) {
+                if (availableCouriersUnsortedArray != null) {
+                    for (var i = 0; i < JSON.parse(response.raw_body).rows[0].elements.length; i++) {
 
-                    // ASSIGN EACH DISTANCE VALUE TO ITS CORRESPONDING OBJECT
-                    availableCouriersUnsortedArray[i].distance = JSON.parse(response.raw_body).rows[0].elements[i];
+                        // ASSIGN EACH DISTANCE VALUE TO ITS CORRESPONDING OBJECT
+                        availableCouriersUnsortedArray[i].distance = JSON.parse(response.raw_body).rows[0].elements[i];
+                    }
+                    console.log(availableCouriersUnsortedArray)
+                        //SEND THE UNSORTED COURIER ARRAY TO THE CLIENT
+                    socket.emit('sortedCouriersList', availableCouriersUnsortedArray);
                 }
-                console.log(availableCouriersUnsortedArray)
-                    //SEND THE UNSORTED COURIER ARRAY TO THE CLIENT
-                socket.emit('sortedCouriersList', availableCouriersUnsortedArray);
+
             });
 
 
@@ -117,8 +107,9 @@ function onConnect(socket) {
     socket.on('newOrder', function(order) {
 
         console.log("New Order Received, Waiting For Courier To Respond")
-
-        socket.broadcast.emit("offerFromUser", order);
+        console.log(order)
+            // socket.to().emit("offerFromUser", order);
+        socketio.emit('offerFromUser', order);
 
     });
 
@@ -126,13 +117,17 @@ function onConnect(socket) {
     //COURIER ACCEPTED THE JOB, HE IS NO MORE AVAILABLE
     socket.on('acceptedByCourier', function(data) {
         console.log("ORDER ACCEPTED BY COURIER")
-        dataModule.postOrder(order) // Write it into Database in ORDER Model
+        dataModule.postOrder(data) // Write it into Database in ORDER Model
 
         //REMOVE THAT COURIER TEMPORARILY WHO HAS JUST GOT THE JOB
-        _.remove(availableCouriersUnsortedArray, function(courier) {
-            return courier._id != order.courierId
+
+
+        console.log(availableCouriersUnsortedArray)
+
+        availableCouriersUnsortedArray = _.remove(availableCouriersUnsortedArray, function(currentObject) {
+            return currentObject._id === data.courierId;
         });
-         console.log(availableCouriersUnsortedArray)
+        console.log(availableCouriersUnsortedArray)
 
     })
 
@@ -181,20 +176,20 @@ function onConnect(socket) {
         console.log(availableCouriersUnsortedArray)
 
     });
-    
 
-        //A COURIER IS REGISTERING TO THE SYSTEM
-        socket.on('registerCourier', function(data) {
-           
-            availableCouriersUnsortedArray.push(data);
-            socket.broadcast.emit('new courierAvailable', data);
-        });
-        socket.on('UnRegisterCourier', function(data) {
-            console.log(data)
-            socket.broadcast.emit('courierRemoved', data);
-            availableCouriersUnsortedArray.splice(availableCouriersUnsortedArray.indexOf(data), 1);
-        });
-    
+
+    //A COURIER IS REGISTERING TO THE SYSTEM
+    socket.on('registerCourier', function(data) {
+
+        availableCouriersUnsortedArray.push(data);
+        socket.broadcast.emit('new courierAvailable', data);
+    });
+    socket.on('UnRegisterCourier', function(data) {
+        console.log(data)
+        socket.broadcast.emit('courierRemoved', data);
+        availableCouriersUnsortedArray.splice(availableCouriersUnsortedArray.indexOf(data), 1);
+    });
+
 
     // Insert sockets below
     require('../api/address/address.socket').register(socket);
@@ -237,7 +232,7 @@ module.exports = function(socketio) {
         //console.log("sockets connected");
         //console.log(socketio.sockets.clients())
         // Call onConnect.
-        onConnect(socket);
+        onConnect(socket, socketio);
 
         console.info("Socket Connected");
     });
