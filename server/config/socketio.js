@@ -75,7 +75,7 @@ var availableCouriersUnsortedArray = [
         },
         info: "Furniture Repairing",
         longitude: 41.091243,
-        latitude: 28.927027,
+        latitude: 39.927027,
         phone: 2352
     }
 ];
