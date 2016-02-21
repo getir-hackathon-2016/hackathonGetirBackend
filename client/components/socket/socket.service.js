@@ -9,7 +9,7 @@ angular.module('getirApp')
       // Send auth token on connection, you will need to DI the Auth service above
       // 'query': 'token=' + Auth.getToken()
       path: '/socket.io-client',
-      transport: ['websocket']
+      transports: ['websocket']
     });
 
     var socket = socketFactory({

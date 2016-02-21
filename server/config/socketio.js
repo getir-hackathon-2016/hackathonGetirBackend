@@ -121,6 +121,14 @@ function onConnect(socket) {
     });
 
 
+    
+    //HANDLE ORDERS
+    socket.on('newOrder', function(order){
+        console.log(order)
+    });
+
+    
+
     //A COURIER IS LOGGING IN
     socket.on('courierLogin', function(data) {
         console.log("COURIER LOGGED IN");

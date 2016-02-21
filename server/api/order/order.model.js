@@ -9,6 +9,14 @@ var OrderSchema = new Schema({
         type: String,
         i18: true
     },
+    user: {
+        type: Schema.ObjectId,
+        ref: 'User'
+    },
+    courier: {
+        type: Schema.ObjectId,
+        ref: 'Courier'
+    },
     startTime :{ type : Date, default: Date.now },
     endTime : Date,
     info: String,
