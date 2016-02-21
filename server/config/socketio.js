@@ -22,30 +22,24 @@ var unirest = require('unirest');
 
 
 var availableCouriersUnsortedArray = [{
-    name: "courier1",
-    _id: "56c819f72a75e63b1a44228e",
-    phone: 23,
-    latitude: 54.406505,
-    longitude: 53.12345,
-    password: 12,
-    info: "info",
-    category: {
-        _id: "56c7cd3562b0ab3310030e84",
-        info: "this is a test category",
-        name: {
-            "en": "categoryNameEN",
-            "tr": "categoryNameTR"
-        }
+    "_id": "56c819f72a75e63b1a44228e",
+    "name": "testCourier",
+    "password": 1,
+    "category": "56c7cd3562b0ab3310030e84",
+    "price": {
+        "usd": 23,
+        "tl": 50
     },
-    price: {
-        tl: 12,
-        usd: 5
-    }
+    "info": "adawd",
+    "longitude": 33.2342,
+    "latitude": 45.23423,
+    "phone": 33
 }, {
     _id: "56c7cd3562b0ab1210030e84",
     name: "courier2",
     phone: 43,
     password: 2,
+    username: "ee",
     latitude: 54.406505,
     longitude: 18.67708,
     info: "info",
@@ -124,21 +118,35 @@ function onConnect(socket) {
 
 
 
-    //HANDLE ORDERS
+    //HANDLE ORDERS AND BROADCASTS TO ALL THE COURIERS, TO DETECT FOR WHICH ONE IS IT MEANT TO
     socket.on('newOrder', function(order) {
 
         console.log("new order")
-        dataModule.postOrder(order).then(function(data) {
-            console.log(data)
-            socket.on('orderAccepted', function() {
-                
-            })
 
-        })
-
-      
+        socket.broadcast.emit("offerFromUser", order);
 
     });
+
+
+    //COURIER ACCEPTED THE JOB
+    socket.on('OrderacceptedByCourier', function(data) {
+
+        dataModule.postOrder(order) // Write it into Database in ORDER Model
+
+        //REMOVE THAT COURIER TEMPORARILY WHO HAS JUST GOT THE JOB
+        _.remove(availableCouriersUnsortedArray, function(courier) {
+            return courier._id != order.courierId
+        });
+
+    })
+
+    //THIS MESSAGE COMES FROM USER TO RELEASE THE COURIER, TO MAKE HIM AVAILABLE
+    socket.on('JobAccomplished', function(courierid) {
+        //GERI AL REMOVELADIGIN KURYEYI
+        dataModule.getCourier(courierid).then(function(courier) {
+            availableCouriersUnsortedArray.push(courier)
+        })
+    })
 
 
 
