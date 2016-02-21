@@ -2,15 +2,14 @@
 
 Getir Hackathon Backend Application Development- NodeJS
 
-Application Name : Fixitt
 
 # Group
-Serhan Öztekin (Backend)
+Serhan Öztekin (Backend) &
 Emre Alparslan (Frontend - Android)
 http://s27.postimg.org/r1uw697df/logo_150.png
 
 # What is Fixitt?
-Fixitt is a backend system serving api, providing a real time software service for the ones who are in need of help in these Areas :
+Fixitt is a backend system project, providing a real time software service for the ones who are in need of help in these Areas :
 
 *Garden Care
 *Furniture Repairing
@@ -26,9 +25,9 @@ The algorithm behind uses geolocation to chooses the most nearest Couriers to Us
 Google Maps Distance Matrix API is used to detect distances and timings.
 
 # Backend Technologies Used In Development
-*NodeJs
-*MongoDB
-*Express
+*[NodeJS](https://nodejs.org/en/)
+*[MongoDB](https://www.mongodb.org/)
+*[Express](http://expressjs.com/)
 
 # NPM dependencies Used In Development 
 
@@ -57,16 +56,16 @@ Google Maps Distance Matrix API is used to detect distances and timings.
 
 # Build Systems
 
-*Grunt 
-*Gulp
+* [Grunt](http://gruntjs.com/)
+* [Gulp](http://gulpjs.com/)
 
 # Real-time
 
-Socket.io - Enables real-time bidirectional event-based communication.
+[Socket.io](http://socket.io/) - Enables real-time bidirectional event-based communication.
 
 # MEAN Stack Application built by Yeoman
 
-Yeoman helps you to kickstart new projects, prescribing best practices and tools to help you stay productive.
+[Yeoman](http://yeoman.io/) helps you to kickstart new projects, prescribing best practices and tools to help you stay productive.
 
 
 # FrontEnd Repo
