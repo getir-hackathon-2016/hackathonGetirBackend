@@ -21,7 +21,7 @@ Couriers are the ones who give service to Users.
 The algorithm behind uses geolocation to chooses the most nearest Couriers to Users in an efficient way to save time and improve effieciency.
 
 
-Google Maps Distance Matrix API is used to detect distances and timings.
+[Google Maps Distance Matrix API](https://developers.google.com/maps/documentation/distance-matrix/intro) is used to detect distances and timings.
 
 # Backend Technologies Used In Development
 * [NodeJS](https://nodejs.org/en/)
